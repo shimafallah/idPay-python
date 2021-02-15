@@ -1,71 +1,62 @@
 import requests
 import json
 
-
-APIURL = "https://api.idpay.ir/v1.1/"
+API_URL = "https://api.idpay.ir/v1.1/"
 # You can get your Token from this url => https://idpay.ir/dashboard/web-services
 TOKEN = "Your Token Here"
-SANDBOX = str(1) # 1 or 0
+SANDBOX = str(1)  # 1 or 0
 
-Headers = {
+header = {
     "Content-Type": "application/json",
-    "X-SANDBOX":SANDBOX,
-    "X-API-KEY":TOKEN
+    "X-SANDBOX": SANDBOX,
+    "X-API-KEY": TOKEN
 }
 
-def Payment(OrderId, Amount, Callback, Name = "", Mail="", Phone = "", Description=""):
 
-    OrderId = str(OrderId)
-    Amount = int(Amount)
-    Posts = {
-        "order_id":OrderId,
-        "amount":Amount,
-        "callback":Callback,
-        "name": Name,
-        "mail": Mail,
-        "phone": Phone,
-        "desc":  Description
+def payment(order_id, amount, callback, name="", mail="", phone="", description=""):
+    posts = {
+        "order_id": str(order_id),
+        "amount": int(amount),
+        "callback": callback,
+        "name": name,
+        "mail": mail,
+        "phone": phone,
+        "desc": description
     }
-    Posts = json.dumps(Posts)
+    posts = json.dumps(posts)
     try:
-        Response = requests.post(f"{APIURL}payment",data=Posts,headers=Headers).text
-        Response = json.loads(Response)
-        Response['id']
-    except:
-        return False 
-    return Response
-
-
-
-def Verify(Id,OrderId):
-
-    OrderId = str(OrderId)
-    Id = str(Id)
-    Posts = {
-        "id": Id,
-        "order_id": OrderId
-    }
-    Posts = json.dumps(Posts)
-    try:
-        Response = requests.post(f"{APIURL}payment/verify",data=Posts,headers=Headers).text
-        Response = json.loads(Response)
-    except:
+        response = requests.post(f"{API_URL}payment", data=posts, headers=header).text
+        response = json.loads(response)
+    except Exception as e:
         return False
-    return Response
+    return response
 
 
-def Inquiry(Id,OrderId):
-
-    OrderId = str(OrderId)
-    Id = str(Id)
-    Posts = {
-        "id": Id,
-        "order_id": OrderId
+def verify(id, order_id):
+    order_id = str(order_id)
+    id = str(id)
+    posts = {
+        "id": id,
+        "order_id": order_id
     }
-    Posts = json.dumps(Posts)
+    posts = json.dumps(posts)
     try:
-        Response = requests.post(f"{APIURL}payment/inquiry",data=Posts,headers=Headers).text
-        Response = json.loads(Response)
-    except:
+        response = requests.post(f"{API_URL}payment/verify", data=posts, headers=header).text
+        response = json.loads(response)
+    except Exception as e:
         return False
-    return Response
+    return response
+
+
+def inquiry(id, order_id):
+    posts = {
+        "id": str(id),
+        "order_id": str(order_id)
+    }
+    posts_json = json.dumps(posts)
+    try:
+        response = requests.post(f"{API_URL}payment/inquiry", data=posts_json, headers=header).text
+        response = json.loads(response)
+    except Exception as e:
+        return False
+    return response
